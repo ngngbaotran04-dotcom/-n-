@@ -124,99 +124,24 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100;
+      height: 100;
       pointer-events: none;
       z-index: 9999;
-      overflow: hidden;
-    }
-    
-    .music-player {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-      z-index: 10000;
-      color: white;
-      min-width: 280px;
-      font-family: Arial, sans-serif;
-    }
-    
-    .music-title {
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-align: center;
-      font-size: 0.95em;
-    }
-    
-    .music-controls {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
-      justify-content: center;
-    }
-    
-    .music-btn {
-      padding: 10px 15px;
-      background: rgba(255,255,255,0.2);
-      border: 1px solid white;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s ease;
-    }
-    
-    .music-btn:hover {
-      background: rgba(255,255,255,0.4);
-      transform: scale(1.05);
-    }
-    
-    .music-btn.active {
-      background: white;
-      color: #667eea;
-    }
-    
-    .volume-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    
-    .volume-control input {
-      flex: 1;
-      height: 5px;
-      cursor: pointer;
-    }
-    
-    #audioPlayer {
-      display: none;
-    }
-  </style>
-</head>
-<body>
-<audio id="audioPlayer"></audio>
-
-<!-- Music Player -->
-<div class="music-player">
-  <div class="music-title">🎵 Nhạc Tết</div>
-  <div class="music-controls">
-    <button class="music-btn" id="playBtn" onclick="togglePlay()">▶ Phát</button>
-    <button class="music-btn" id="pauseBtn" onclick="pauseMusic()" style="display:none;">⏸ Dừng</button>
-    <button class="music-btn" onclick="nextSong()">⏭ Tiếp Theo</button>
-  </div>
-  <div class="volume-control">
-    <span>🔊</span>
-    <input type="range" id="volumeControl" min="0" max="100" value="50" onchange="changeVolume(this.value)">
-  </div>
+      overflow: hidden;}
+    <div style="display:none">
+    <iframe 
+        width="0" 
+        height="0" 
+        src="https://www.youtube.com/embed/kVYFn1xGR_c?autoplay=1" 
+        frameborder="0" 
+        allow="autoplay">
+    </iframe>
 </div>
 
-<div class="floating-decorations" id="floatingContainer"></div>
-
+<p>Đang phát nhạc Tết 2026...</p>
+  </style>
+</head>
 <div class="container">
   <h1>🎉 DANH SÁCH SẢN PHẨM TẾT 🎉</h1>
   
@@ -423,81 +348,13 @@ function createFloatingItem() {
   setTimeout(() => element.remove(), (item.duration + item.delay) * 1000);
 }
 
-// Add animation
-const style = document.createElement('style');
+// Add animationconst style = document.createElement('style');
 style.textContent = `
   @keyframes float {
     to {
       transform: translateY(100vh) rotate(720deg);
       opacity: 0;
-    }
-  }
-`;
-document.head.appendChild(style);
-
-// Create floating items periodically
-setInterval(createFloatingItem, 800);
-
-// Music Player Functionality
-const audioPlayer = document.getElementById('audioPlayer');
-const playBtn = document.getElementById('playBtn');
-const pauseBtn = document.getElementById('pauseBtn');
-
-const songs = [
-  {name: 'Gặp Nhau Ngày Tết', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Gap_Nhau_Ngay_Tet.mp3?alt=media'},
-  {name: 'Xuân Nay Con Đã Lớn', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Xuan_Nay_Con_Da_Lon.mp3?alt=media'},
-  {name: 'Quê Hương Đợi Em', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Que_Huong_Doi_Em.mp3?alt=media'},
-  {name: 'Xuân Yêu Thương', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Xuan_Yeu_Thuong.mp3?alt=media'},
-  {name: 'Tết Này Con Vui Như Thế', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Tet_Nay_Con_Vui_Nhu_The.mp3?alt=media'},
-  {name: 'Tết Này Con Sẽ Về', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Tet_Nay_Con_Se_Ve.mp3?alt=media'}
-];
-
-let currentSongIndex = 0;
-
-function initAudio() {
-  audioPlayer.src = songs[currentSongIndex].url;
-  const songTitle = document.querySelector('.music-title');
-  songTitle.textContent = '🎵 ' + songs[currentSongIndex].name;
-  audioPlayer.volume = 0.5;
-}
-
-function togglePlay() {
-  if (audioPlayer.paused) {
-    audioPlayer.play();
-    playBtn.style.display = 'none';
-    pauseBtn.style.display = 'block';
-  } else {
-    audioPlayer.pause();
-    playBtn.style.display = 'block';
-    pauseBtn.style.display = 'none';
-  }
-}
-
-function pauseMusic() {
-  audioPlayer.pause();
-  playBtn.style.display = 'block';
-  pauseBtn.style.display = 'none';
-}
-
-function nextSong() {
-  currentSongIndex = (currentSongIndex + 1) % songs.length;
-  audioPlayer.src = songs[currentSongIndex].url;
-  const songTitle = document.querySelector('.music-title');
-  songTitle.textContent = '🎵 ' + songs[currentSongIndex].name;
-  if (!audioPlayer.paused) {
-    audioPlayer.play();
-  }
-}
-
-function changeVolume(value) {
-  audioPlayer.volume = value / 100;
-}
-
-// Initialize audio when page loads
-window.addEventListener('load', initAudio);
-
-// Auto play next song when current ends
-audioPlayer.addEventListener('ended', nextSong);
+    }}
 </script>
 </body>
 </html>
