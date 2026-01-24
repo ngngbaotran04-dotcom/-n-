@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Danh Sách Sản Phẩm Tết</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      padding: 30px;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #667eea;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    
+    nav button {
+      padding: 12px 20px;
+      border: none;
+      background: #667eea;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    
+    nav button:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    nav button.active {
+      background: #764ba2;
+      box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+    }
+    
+    .section {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .section.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .section h2 {
+      text-align: center;
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    table th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    
+    table td {
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    table tr:hover {
+      background: #f5f5f5;
+    }
+    
+    table img {
+      max-width: 150px;
+      height: auto;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .floating-decorations {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    
+    .music-player {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      z-index: 10000;
+      color: white;
+      min-width: 280px;
+      font-family: Arial, sans-serif;
+    }
+    
+    .music-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 0.95em;
+    }
+    
+    .music-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      justify-content: center;
+    }
+    
+    .music-btn {
+      padding: 10px 15px;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid white;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    
+    .music-btn:hover {
+      background: rgba(255,255,255,0.4);
+      transform: scale(1.05);
+    }
+    
+    .music-btn.active {
+      background: white;
+      color: #667eea;
+    }
+    
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .volume-control input {
+      flex: 1;
+      height: 5px;
+      cursor: pointer;
+    }
+    
+    #audioPlayer {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<audio id="audioPlayer"></audio>
+
+<!-- Music Player -->
+<div class="music-player">
+  <div class="music-title">🎵 Nhạc Tết</div>
+  <div class="music-controls">
+    <button class="music-btn" id="playBtn" onclick="togglePlay()">▶ Phát</button>
+    <button class="music-btn" id="pauseBtn" onclick="pauseMusic()" style="display:none;">⏸ Dừng</button>
+    <button class="music-btn" onclick="nextSong()">⏭ Tiếp Theo</button>
+  </div>
+  <div class="volume-control">
+    <span>🔊</span>
+    <input type="range" id="volumeControl" min="0" max="100" value="50" onchange="changeVolume(this.value)">
+  </div>
+</div>
+
+<div class="floating-decorations" id="floatingContainer"></div>
+
+<div class="container">
+  <h1>🎉 DANH SÁCH SẢN PHẨM TẾT 🎉</h1>
+  
+  <nav>
+    <button class="nav-btn active" data-section="mai">Cây Mai</button>
+    <button class="nav-btn" data-section="dao">Cây Đào</button>
+    <button class="nav-btn" data-section="tac">Cây Tắc</button>
+    <button class="nav-btn" data-section="hat">Hạt & Mứt</button>
+    <button class="nav-btn" data-section="banh">Bánh Kẹo</button>
+  </nav>
+
+  <!-- Section Cây Mai -->
+  <div class="section active" id="mai">
+    <h2>🌸 BẢNG DANH SÁCH CÂY MAI NGÀY TẾT</h2>
+    <table border="1" cellpadding="8" cellspacing="0">
+      <tr>
+        <th>Loại Cây</th>
+        <th>Hình Ảnh</th>
+        <th>Giá Bán</th>
+      </tr>
+      <tr>
+        <td>Cây Mai Nhỏ</td>
+        <td>
+          <img src="https://maitetthuduc.com/img_data/images/nhung-the-mai-dep-va-y-nghia-nhat.jpg" alt="Cây Mai Nhỏ">
+        </td>
+        <td>800.000 đ</td>
+      </tr>
+      <tr>
+        <td>Cây Mai To</td>
+        <td>
+          <img src="https://chamboncaytrong.com/wp-content/uploads/2022/09/FB_IMG_1580180845005.jpg" alt="Cây Mai To">
+        </td>
+        <td>1.500.000 đ</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Section Cây Đào -->
+  <div class="section" id="dao">
+    <h2>🌺 BẢNG DANH SÁCH CÂY ĐÀO NGÀY TẾT</h2>
+    <table border="1" cellpadding="8" cellspacing="0">
+      <tr>
+        <th>Loại Cây</th>
+        <th>Hình Ảnh</th>
+        <th>Giá Bán</th>
+      </tr>
+      <tr>
+        <td>Cây Đào Giả</td>
+        <td>
+          <img src="https://afamilycdn.com/150157425591193600/2024/1/8/photo2024-01-0816-59-23-17047089264151423458117.jpg" alt="Cây Đào Giả">
+        </td>
+        <td>270.000 đ</td>
+      </tr>
+      <tr>
+        <td>Cây Đào Thật</td>
+        <td>
+          <img src="https://bizweb.dktcdn.net/100/275/164/products/bh784.jpg?v=1577228628087" alt="Cây Đào Thật">
+        </td>
+        <td>1.150.000 đ</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Section Cây Tắc -->
+  <div class="section" id="tac">
+    <h2>🍊 BẢNG DANH SÁCH CÂY TẮC NGÀY TẾT</h2>
+    <table border="1" cellpadding="8" cellspacing="0">
+      <tr>
+        <th>Loại Cây</th>
+        <th>Hình Ảnh</th>
+        <th>Giá Bán</th>
+      </tr>
+      <tr>
+        <td>Cây Tắc Giả</td>
+        <td>
+          <img src="https://hoangvugia.com/wp-content/uploads/2023/03/Cay-quat-canh-gia-dep-768x768.jpg" alt="Cây Tắc Giả">
+        </td>
+        <td>100.000 đ</td>
+      </tr>
+      <tr>
+        <td>Cây Tắc Thật</td>
+        <td>
+          <img src="https://thegioicayxanh.com.vn/wp-content/uploads/2020/01/cay-tac-1.jpg" alt="Cây Tắc Thật">
+        </td>
+        <td>700.000 đ</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Section Hạt & Mứt -->
+  <div class="section" id="hat">
+    <h2>🌻 BẢNG DANH SÁCH HẠT VÀ MỨT NGÀY TẾT</h2>
+    <table border="1" cellpadding="8" cellspacing="0">
+      <tr>
+        <th>Tên Sản Phẩm</th>
+        <th>Giá Bán</th>
+        <th>Hình Ảnh</th>
+      </tr>
+      <tr>
+        <td>Hạt Hướng Dương</td>
+        <td>123.000 đ/kg</td>
+        <td>
+          <img src="https://cdn.tgdd.vn/2021/05/CookProduct/Tac-dung-cua-hat-huong-duong-doi-voi-suc-khoe-va-cach-an-hat-huong-duong-0-1200x676-1200x676-1.jpg" alt="Hạt Hướng Dương">
+        </td>
+      </tr>
+      <tr>
+        <td>Hạt Bí</td>
+        <td>135.000 đ/kg</td>
+        <td>
+          <img src="https://afamilycdn.com/150157425591193600/2025/3/9/2-1741513769573325895012.png" alt="Hạt Bí">
+        </td>
+      </tr>
+      <tr>
+        <td>Hạt Dưa</td>
+        <td>150.000 đ/kg</td>
+        <td>
+          <img src="https://xuongrangthienlan.com/wp-content/uploads/2021/12/SanPhamThienLan-3-scaled.jpg" alt="Hạt Dưa">
+        </td>
+      </tr>
+      <tr>
+        <td>Mứt Tết</td>
+        <td>200.000 đ</td>
+        <td>
+          <img src="https://danviet.ex-cdn.com/files/f1/296231569849192448/2022/1/28/luu-y-khi-chon-mut-trong-ngay-tet1-1643344887376-16433448883281813422373.jpg" alt="Mứt Tết">
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Section Bánh Kẹo -->
+  <div class="section" id="banh">
+    <h2>🍬 BẢNG DANH SÁCH BÁNH KẸO NGÀY TẾT</h2>
+    <table border="1" cellpadding="8" cellspacing="0">
+      <tr>
+        <th>Tên Bánh Kẹo</th>
+        <th>Giá Bán</th>
+        <th>Hình Ảnh</th>
+      </tr>
+      <tr>
+        <td>Bánh Chưng</td>
+        <td>110.000 đ/cái</td>
+        <td>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_3frk6LOsVnaW4gSTdCRMVuE-rgNGYE24p6fPATPOwQ&s=10" alt="Bánh Chưng">
+        </td>
+      </tr>
+      <tr>
+        <td>Bánh Tét</td>
+        <td>100.000 đ/cái</td>
+        <td>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFAElGQUD_bP_GaHkKZPGr7J6OYbgpkt_blPBg41-83g&s=10" alt="Bánh Tét">
+        </td>
+      </tr>
+      <tr>
+        <td>Kẹo Bắp</td>
+        <td>59.000 đ/kg</td>
+        <td>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRjJUaXfIBkB6sbpweLbBSwRAdVcY6AAouI8rgfRPpng&s=10" alt="Kẹo Bắp">
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<script>
+// Navigation functionality
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const sectionId = this.getAttribute('data-section');
+    
+    // Remove active class from all buttons and sections
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    
+    // Add active class to clicked button and corresponding section
+    this.classList.add('active');
+    document.getElementById(sectionId).classList.add('active');
+  });
+});
+
+// Floating decorations
+function createFloatingItem() {
+  const items = [
+    { emoji: '🌸', duration: 4, delay: 0, opacity: 0.7 },
+    { emoji: '🎉', duration: 5, delay: 1, opacity: 0.6 },
+    { emoji: '🍬', duration: 6, delay: 2, opacity: 0.5 },
+    { emoji: '🎊', duration: 4.5, delay: 1.5, opacity: 0.6 }
+  ];
+  
+  const item = items[Math.floor(Math.random() * items.length)];
+  const element = document.createElement('div');
+  
+  element.innerHTML = item.emoji;
+  element.style.position = 'fixed';
+  element.style.fontSize = Math.random() * 30 + 20 + 'px';
+  element.style.opacity = item.opacity;
+  element.style.pointerEvents = 'none';
+  element.style.zIndex = '9999';
+  element.style.left = Math.random() * 100 + 'vw';
+  element.style.top = '-50px';
+  element.style.animation = `float ${item.duration}s linear ${item.delay}s`;
+  
+  document.getElementById('floatingContainer').appendChild(element);
+  
+  setTimeout(() => element.remove(), (item.duration + item.delay) * 1000);
+}
+
+// Add animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes float {
+    to {
+      transform: translateY(100vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(style);
+
+// Create floating items periodically
+setInterval(createFloatingItem, 800);
+
+// Music Player Functionality
+const audioPlayer = document.getElementById('audioPlayer');
+const playBtn = document.getElementById('playBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+
+const songs = [
+  {name: 'Gặp Nhau Ngày Tết', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Gap_Nhau_Ngay_Tet.mp3?alt=media'},
+  {name: 'Xuân Nay Con Đã Lớn', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Xuan_Nay_Con_Da_Lon.mp3?alt=media'},
+  {name: 'Quê Hương Đợi Em', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Que_Huong_Doi_Em.mp3?alt=media'},
+  {name: 'Xuân Yêu Thương', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Xuan_Yeu_Thuong.mp3?alt=media'},
+  {name: 'Tết Này Con Vui Như Thế', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Tet_Nay_Con_Vui_Nhu_The.mp3?alt=media'},
+  {name: 'Tết Này Con Sẽ Về', url: 'https://firebasestorage.googleapis.com/v0/b/music-9f43b.appspot.com/o/Tet_Nay_Con_Se_Ve.mp3?alt=media'}
+];
+
+let currentSongIndex = 0;
+
+function initAudio() {
+  audioPlayer.src = songs[currentSongIndex].url;
+  const songTitle = document.querySelector('.music-title');
+  songTitle.textContent = '🎵 ' + songs[currentSongIndex].name;
+  audioPlayer.volume = 0.5;
+}
+
+function togglePlay() {
+  if (audioPlayer.paused) {
+    audioPlayer.play();
+    playBtn.style.display = 'none';
+    pauseBtn.style.display = 'block';
+  } else {
+    audioPlayer.pause();
+    playBtn.style.display = 'block';
+    pauseBtn.style.display = 'none';
+  }
+}
+
+function pauseMusic() {
+  audioPlayer.pause();
+  playBtn.style.display = 'block';
+  pauseBtn.style.display = 'none';
+}
+
+function nextSong() {
+  currentSongIndex = (currentSongIndex + 1) % songs.length;
+  audioPlayer.src = songs[currentSongIndex].url;
+  const songTitle = document.querySelector('.music-title');
+  songTitle.textContent = '🎵 ' + songs[currentSongIndex].name;
+  if (!audioPlayer.paused) {
+    audioPlayer.play();
+  }
+}
+
+function changeVolume(value) {
+  audioPlayer.volume = value / 100;
+}
+
+// Initialize audio when page loads
+window.addEventListener('load', initAudio);
+
+// Auto play next song when current ends
+audioPlayer.addEventListener('ended', nextSong);
+</script>
+</body>
+</html>
